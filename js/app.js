@@ -12,12 +12,12 @@ const amountInput = document.getElementById('amountInput');
 const categorySelect = document.getElementById('categorySelect');
 const addCategoryBtn = document.getElementById('addCategoryBtn');
 const transactionListEl = document.getElementById('transactionList');
-const budgetLimitInput = document.getElementById('budgetLimit');
+const budgetLimitInputEl = document.getElementById('budgetLimit');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
-  if (budgetLimitInput) budgetLimitInput.value = budgetLimit || '';
+  if (budgetLimitInputEl) budgetLimitInputEl.value = budgetLimit || '';
   renderCategories();
   updateUI();
   initTheme();
@@ -57,11 +57,13 @@ function renderBalance() {
 function renderTransactions() {
   if (!transactionListEl) return;
   transactionListEl.innerHTML = '';
+
+  const totalSpent = transactions.reduce((acc, t) => acc + t.amount, 0);
+  const isOverLimit = budgetLimit > 0 && totalSpent > budgetLimit;
+
   transactions.forEach((item, index) => {
     const li = document.createElement('li');
-    const isOver = budgetLimit > 0 && item.amount > budgetLimit;
-    
-    li.className = `transaction-item ${isOver ? 'over-limit' : ''}`;
+    li.className = `transaction-item ${isOverLimit ? 'over-limit' : ''}`;
     li.innerHTML = `
       <div>
         <strong>${item.description}</strong>
@@ -127,8 +129,8 @@ if (addCategoryBtn) {
 }
 
 // Limit Warning Input
-if (budgetLimitInput) {
-  budgetLimitInput.addEventListener('input', (e) => {
+if (budgetLimitInputEl) {
+  budgetLimitInputEl.addEventListener('input', (e) => {
     budgetLimit = Number(e.target.value);
     updateUI();
   });
